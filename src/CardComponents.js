@@ -10,7 +10,7 @@ export class LoginCard extends React.Component { // Custom Card for Login
 
     constructor(props) { // Props are inherited properties one could pass.
         super(props)
-        this.state = { username: null, password: null, backend: "https://lms.ssn.edu.in/" }
+        this.state = { wentthruvalidationbefore: false, username: null, password: null, backend: "https://lms.ssn.edu.in/" }
 
         this.handleUsernameChange = this.handleUsernameChange.bind(this);
         this.handlePasswordChange = this.handlePasswordChange.bind(this);
@@ -19,23 +19,33 @@ export class LoginCard extends React.Component { // Custom Card for Login
     }
 
     handleUsernameChange(event) {
-        this.setState({ username: event.target.value, password: this.state.password, backend: this.state.backend });
+        this.setState({ wentthruvalidationbefore: this.state.wentthruvalidationbefore, username: event.target.value, password: this.state.password, backend: this.state.backend });
     }
     handlePasswordChange(event) {
-        this.setState({ username: this.state.username, password: event.target.value, backend: this.state.backend });
+        this.setState({ wentthruvalidationbefore: this.state.wentthruvalidationbefore, username: this.state.username, password: event.target.value, backend: this.state.backend });
     }
     handleBackendSelectorChange(event) {
-        this.setState({ username: this.state.username, password: this.state.password, backend: event.target.value });
+        this.setState({ wentthruvalidationbefore: this.state.wentthruvalidationbefore, username: this.state.username, password: this.state.password, backend: event.target.value });
     }
     handleSubmit(event) {
         event.preventDefault();
-        alert('username: ' + this.state.username + "\npassword: " + this.state.password + "\nbackend: " + this.state.backend);
+        const form = event.currentTarget;
+        console.log(form.checkValidity())
+        if (form.checkValidity() === false) {
+            this.setState({ wentthruvalidationbefore: false, username: this.state.username, password: this.state.password, backend: this.state.backend });
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        else {
+
+        }
+        this.setState({ wentthruvalidationbefore: true, username: this.state.username, password: this.state.password, backend: this.state.backend })
     }
 
     render() {
         return <Card className='m-2' style={{ width: '20rem' }}>
             <Card.Header>Login to Moodle</Card.Header>
-            <Form onSubmit={this.handleSubmit}>
+            <Form onSubmit={this.handleSubmit} noValidate validated={this.state.wentthruvalidationbefore}>
 
                 <Form.Group className="m-3" controlId="moodleusernameform">
                     <FloatingLabel controlId="floatingUsername" label="Moodle Username">
