@@ -5,11 +5,14 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 
+import { get_token } from './MoodleAPI';
+
 export class LoginCard extends React.Component { // Custom Card for Login
 
 
     constructor(props) { // Props are inherited properties one could pass.
         super(props)
+        // Set the default state here
         this.state = { wentthruvalidationbefore: false, username: null, password: null, backend: "https://lms.ssn.edu.in/" }
 
         this.handleUsernameChange = this.handleUsernameChange.bind(this);
@@ -27,17 +30,19 @@ export class LoginCard extends React.Component { // Custom Card for Login
     handleBackendSelectorChange(event) {
         this.setState({ wentthruvalidationbefore: this.state.wentthruvalidationbefore, username: this.state.username, password: this.state.password, backend: event.target.value });
     }
-    handleSubmit(event) {
+    async handleSubmit(event) {
         event.preventDefault();
         const form = event.currentTarget;
-        console.log(form.checkValidity())
         if (form.checkValidity() === false) {
             this.setState({ wentthruvalidationbefore: false, username: this.state.username, password: this.state.password, backend: this.state.backend });
             event.preventDefault();
             event.stopPropagation();
+
         }
         else {
-
+            var token = await get_token(this.state.username, this.state.password, this.state.backend);
+            // TODO: instead of only getting a token, make a client object and pass that instead
+            //alert(token)
         }
         this.setState({ wentthruvalidationbefore: true, username: this.state.username, password: this.state.password, backend: this.state.backend })
     }
