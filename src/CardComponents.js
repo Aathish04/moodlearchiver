@@ -123,7 +123,7 @@ export class LoginCard extends React.Component { // Custom Card for Login
                     </Form.Group>
                 }
                 <Button variant="primary" className="mb-2" type='submit'>
-                    Submit
+                    Log In
                 </Button>
                 <InvalidCredentialsToast showToast={this.state.invalidcreds}></InvalidCredentialsToast>
             </Form>
@@ -168,7 +168,7 @@ export class CourseSelectCard extends React.Component {
     render() {
         return <Card className='m-2 border-3' border={this.state.borderstyle} style={{ width: '20rem' }}>
             <Card.Header>Select Courses</Card.Header>
-            <Form onSubmit={this.handleSubmit} noValidate validated={this.state.wentthruvalidationbefore}>
+            <Form onSubmit={this.handleSubmit}>
                 {this.state.courses.length > 0 &&
                     <DropdownMultiselect
                         options={this.state.courses}
@@ -176,8 +176,8 @@ export class CourseSelectCard extends React.Component {
                         optionLabel="shortname"
                         name="courses"
                         handleOnChange={this.handleDropDownChange} />}
-                <Button variant="primary" className="mb-2" type='submit'>
-                    Submit
+                <Button variant="success" className="mb-2" type='submit' disabled={this.state.selectedcoursesids.length <= 0}>
+                    Download
                 </Button>
             </Form>
         </Card>
