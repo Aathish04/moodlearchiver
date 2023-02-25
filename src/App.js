@@ -3,7 +3,7 @@ import './App.css';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import { LoginCard } from './CardComponents';
+import { LoginCard, CourseSelectCard } from './CardComponents';
 
 export class App extends React.Component {
   constructor(props) {
@@ -21,6 +21,9 @@ export class App extends React.Component {
         <header className="App-header">
           <h1 id="mainHeading">MoodleArchiver</h1>
           <LoginCard setMoodleClient={this.setMoodleClient}></LoginCard>
+          {
+            this.state.moodleclient !== null && <CourseSelectCard></CourseSelectCard>
+          }
         </header>
       </div>
     );

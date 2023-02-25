@@ -4,7 +4,7 @@ import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
-
+import DropdownMultiselect from "react-multiselect-dropdown-bootstrap";
 import { InvalidCredentialsToast } from "./Toasts"
 
 import { MoodleClient } from './MoodleAPI';
@@ -124,6 +124,32 @@ export class LoginCard extends React.Component { // Custom Card for Login
                     Submit
                 </Button>
                 <InvalidCredentialsToast showToast={this.state.invalidcreds}></InvalidCredentialsToast>
+            </Form>
+        </Card>
+    }
+}
+
+export class CourseSelectCard extends React.Component {
+    constructor(props) { // Props are inherited properties one could pass.
+        super(props);
+        this.state = {
+            borderstyle: "light",
+            wentthruvalidationbefore: false,
+        }
+    }
+
+    handleSubmit() {
+
+    }
+    render() {
+        return <Card className='m-2 border-3' border={this.state.borderstyle} style={{ width: '20rem' }}>
+            <Card.Header>Select Courses</Card.Header>
+            <Form onSubmit={this.handleSubmit} noValidate validated={this.state.wentthruvalidationbefore}>
+
+                <DropdownMultiselect options={["Australia", "Canada", "USA", "Poland", "Spain", "France"]} name="courses" />
+                <Button variant="primary" className="mb-2" type='submit'>
+                    Submit
+                </Button>
             </Form>
         </Card>
     }
