@@ -30,8 +30,12 @@ export class LoginCard extends React.Component { // Custom Card for Login
         this.handleBackendSelectorChange = this.handleBackendSelectorChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleCustomBackendInput = this.handleCustomBackendInput.bind(this);
+        this.setMoodleClient = this.setMoodleClient.bind(this);
     }
 
+    setMoodleClient(client) {
+        this.props.setMoodleClient(client);
+    }
     handleUsernameChange(event) {
         this.setState({ username: event.target.value });
     }
@@ -63,6 +67,7 @@ export class LoginCard extends React.Component { // Custom Card for Login
             try {
                 await moodleclient.getToken(this.state.password);
                 this.setState({ borderstyle: "success", invalidcreds: false });
+                this.setMoodleClient(moodleclient);
             }
             catch (e) {
                 if (e.message === "invalidlogin") {
