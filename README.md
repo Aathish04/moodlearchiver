@@ -1,70 +1,37 @@
-# Getting Started with Create React App
+# MoodleArchiver
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Moodle Archiver is a front-end web tool designed with React and Bootstrap that allows you to download all the files from your Moodle courses all at once.
 
-## Available Scripts
+## Usage
 
-In the project directory, you can run:
+With the website running, follow the steps below:
 
-### `npm start`
+1. Visit the website and enter your credentials using the form provided.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+    This website was only tested with the LMS of SSN College of Engineering, but you can enter your own institution's Moodle Backend, and it should still work.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+2. Select the courses whose material you want to download.
 
-### `npm test`
+3. Download the files!
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+You'll obtain all of the files as a single ZIP file. Each of the courses you selected will get their own folder, and each each section of each course gets its own folder and so on.
 
-### `npm run build`
+## High Level Implementation Details
+Superficially, this is just a client that speaks to the Moodle Webservice API and asks it for Course information and file downloads.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+It uses React and Bootstrap for the User Interface and has a little custom Moodle Webservice API Client to talk to the actual servers.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Have a look at the source code! Since I built this as a learning project, I've attempted to keep code as self explanatory and clear-cut as possible.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Security
 
-### `npm run eject`
+This web app does not store any of your credentials for more than the length of your session - neither the token used for interacting with the Moodle API, nor the password you enter so the token can be obtained are saved by this project. The token is only stored for as long as each of your sessions on the web app lasts.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Contribution
+Is welcome! If you face any bugs, or want to extend this project you're welcome to fork it.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Acknowledgements and Disclaimers
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+This project is NOT affiliated with Moodle Pty Ltd or any of its affiliates in ANY WAY.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+It is however, indebted to them for providing such an easy to use Webservice API so projects like this can be built.
