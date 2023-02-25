@@ -5,7 +5,9 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 
-import { get_token } from './MoodleAPI';
+import { InvalidCredentialsToast } from "./Toasts"
+
+import { MoodleClient } from './MoodleAPI';
 
 export class LoginCard extends React.Component { // Custom Card for Login
 
@@ -13,7 +15,14 @@ export class LoginCard extends React.Component { // Custom Card for Login
     constructor(props) { // Props are inherited properties one could pass.
         super(props)
         // Set the default state here
-        this.state = { wentthruvalidationbefore: false, username: null, password: null, backend: "https://lms.ssn.edu.in/" }
+        this.state = {
+            invalidcreds: false,
+            wentthruvalidationbefore: false,
+            username: null,
+            password: null,
+            backend: "https://lms.ssn.edu.in/",
+            borderstyle: "light"
+        }
 
         this.handleUsernameChange = this.handleUsernameChange.bind(this);
         this.handlePasswordChange = this.handlePasswordChange.bind(this);
@@ -22,33 +31,43 @@ export class LoginCard extends React.Component { // Custom Card for Login
     }
 
     handleUsernameChange(event) {
-        this.setState({ wentthruvalidationbefore: this.state.wentthruvalidationbefore, username: event.target.value, password: this.state.password, backend: this.state.backend });
+        this.setState({ username: event.target.value });
     }
     handlePasswordChange(event) {
-        this.setState({ wentthruvalidationbefore: this.state.wentthruvalidationbefore, username: this.state.username, password: event.target.value, backend: this.state.backend });
+        this.setState({ password: event.target.value });
     }
     handleBackendSelectorChange(event) {
-        this.setState({ wentthruvalidationbefore: this.state.wentthruvalidationbefore, username: this.state.username, password: this.state.password, backend: event.target.value });
+        this.setState({ backend: event.target.value });
     }
     async handleSubmit(event) {
         event.preventDefault();
         const form = event.currentTarget;
         if (form.checkValidity() === false) {
-            this.setState({ wentthruvalidationbefore: false, username: this.state.username, password: this.state.password, backend: this.state.backend });
+            this.setState({ wentthruvalidationbefore: false });
             event.preventDefault();
             event.stopPropagation();
 
         }
         else {
-            var token = await get_token(this.state.username, this.state.password, this.state.backend);
-            // TODO: instead of only getting a token, make a client object and pass that instead
-            //alert(token)
+            var moodleclient = new MoodleClient(this.state.username, this.state.backend);
+            var invalidlogin = false;
+            try {
+                await moodleclient.getToken(this.state.password);
+                this.setState({ borderstyle: "success" });
+            }
+            catch (e) {
+                if (e.message === "invalidlogin") {
+                    invalidlogin = true;
+                }
+                this.setState({ borderstyle: "danger", invalidcreds: invalidlogin });
+            }
         }
-        this.setState({ wentthruvalidationbefore: true, username: this.state.username, password: this.state.password, backend: this.state.backend })
+
+        this.setState({ wentthruvalidationbefore: true })
     }
 
     render() {
-        return <Card className='m-2' style={{ width: '20rem' }}>
+        return <Card className='m-2 border-3' border={this.state.borderstyle} style={{ width: '20rem' }}>
             <Card.Header>Login to Moodle</Card.Header>
             <Form onSubmit={this.handleSubmit} noValidate validated={this.state.wentthruvalidationbefore}>
 
@@ -82,7 +101,7 @@ export class LoginCard extends React.Component { // Custom Card for Login
                 <Button variant="primary" className="mb-2" type='submit'>
                     Submit
                 </Button>
-
+                <InvalidCredentialsToast showToast={this.state.invalidcreds}></InvalidCredentialsToast>
             </Form>
         </Card>
     }
