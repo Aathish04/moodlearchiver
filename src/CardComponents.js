@@ -65,7 +65,9 @@ export class LoginCard extends React.Component { // Custom Card for Login
             var moodleclient = new MoodleClient(this.state.username, this.state.backend);
             var invalidlogin = false;
             try {
+                this.props.setLoading(true)
                 await moodleclient.getToken(this.state.password);
+                this.props.setLoading(false)
                 this.setState({ borderstyle: "success", invalidcreds: false });
                 this.setMoodleClient(moodleclient);
             }
@@ -144,16 +146,20 @@ export class CourseSelectCard extends React.Component {
     }
 
     async componentDidMount() {
+        this.props.setLoading(true)
         await this.props.moodleclient.getUserID();
         this.setState({ courses: await this.props.moodleclient.getUserCourses() })
+        this.props.setLoading(false)
     }
 
     async handleSubmit(event) {
         event.preventDefault();
+        this.props.setLoading(true)
         await this.props.moodleclient.getFilesForDownload(
             this.state.courses.filter(course => this.state.selectedcoursesids.includes(course["id"].toString()))
         );
         await this.props.moodleclient.downloadFilesIntoZIP();
+        this.props.setLoading(false)
     }
 
     handleDropDownChange(selected) {
