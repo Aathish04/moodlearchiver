@@ -153,6 +153,7 @@ export class CourseSelectCard extends React.Component {
         await this.props.moodleclient.getFilesForDownload(
             this.state.courses.filter(course => this.state.selectedcoursesids.includes(course["id"].toString()))
         );
+        await this.props.moodleclient.downloadFilesIntoZIP();
     }
 
     handleDropDownChange(selected) {

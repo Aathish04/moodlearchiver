@@ -1,3 +1,5 @@
+import JSZip from "jszip";
+import { saveAs } from 'file-saver';
 export class MoodleClient {
     headersList = {
         "Accept": "*/*",
@@ -129,7 +131,13 @@ export class MoodleClient {
                                         {
                                             "fileurl": content["fileurl"],
                                             "filename": content["filename"],
-                                            "filepath": content["filepath"],
+                                            // We do the following so that in the event that the faculty uploaded a folder as the module,
+                                            // all the files inside the folder are properly wrapped up in said folder
+                                            // We accomplish this by prepending the filepath of the file with the name
+                                            // of the folder. By default the filepath is '/', so when we prepend,
+                                            // the path becomes 'foldername/' and the file is saved at
+                                            // "foldername/filename.filextension" instead of at "/filename.filextension"
+                                            "filepath": module["modplural"] === "Folders" ? module["name"] + content["filepath"] : content["filepath"],
                                         }
                                     )
                                 }
@@ -142,6 +150,32 @@ export class MoodleClient {
 
         // Now, we have all the files!
         // console.log(this.files)
+        return this.files;
+    }
+
+    async downloadFilesIntoZIP() {
+        let jszip = new JSZip();
+        for (let course in this.files) {
+            var coursefolder = jszip.folder(this.makeStringPathSafe(course));
+            let sections = this.files[course];
+            for (let section in sections) {
+                var sectionfolder = coursefolder.folder(section);
+                for (let module of sections[section]) {
+                    // a module is either a file or folder. see TODO in func above.
+                    let bodyContent = new MoodleFormData();
+                    bodyContent.append("token", this.token);
+                    let response = await fetch(module["fileurl"], {
+                        method: "POST",
+                        body: bodyContent,
+                        headers: this.headersList
+                    });
+                    let data = await response.blob();
+                    console.log(module["filepath"]);
+                    sectionfolder.file(module["filepath"] + module["filename"], data)
+                }
+            }
+        }
+        jszip.generateAsync({ type: "blob" }).then(function (blob) { saveAs(blob, `MoodleArchive.zip`); });
     }
 }
 
