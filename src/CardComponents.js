@@ -21,6 +21,7 @@ export class LoginCard extends React.Component { // Custom Card for Login
             username: null,
             password: null,
             backend: "https://lms.ssn.edu.in/",
+            custombackend: false,
             borderstyle: "light"
         }
 
@@ -28,6 +29,7 @@ export class LoginCard extends React.Component { // Custom Card for Login
         this.handlePasswordChange = this.handlePasswordChange.bind(this);
         this.handleBackendSelectorChange = this.handleBackendSelectorChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleCustomBackendInput = this.handleCustomBackendInput.bind(this);
     }
 
     handleUsernameChange(event) {
@@ -37,6 +39,13 @@ export class LoginCard extends React.Component { // Custom Card for Login
         this.setState({ password: event.target.value });
     }
     handleBackendSelectorChange(event) {
+        if (event.target.value === "custom") {
+            this.setState({ custombackend: true });
+        }
+        else { this.setState({ backend: event.target.value, custombackend: false }); }
+    }
+
+    handleCustomBackendInput(event) {
         this.setState({ backend: event.target.value });
     }
     async handleSubmit(event) {
@@ -53,7 +62,7 @@ export class LoginCard extends React.Component { // Custom Card for Login
             var invalidlogin = false;
             try {
                 await moodleclient.getToken(this.state.password);
-                this.setState({ borderstyle: "success" });
+                this.setState({ borderstyle: "success", invalidcreds: false });
             }
             catch (e) {
                 if (e.message === "invalidlogin") {
@@ -91,13 +100,21 @@ export class LoginCard extends React.Component { // Custom Card for Login
 
                 <Form.Group className="m-3" controlId="moodlebackendselectform">
                     <Form.Label>Moodle Backend:</Form.Label>
-                    <Form.Select aria-label="Moodle Backend Selector" onChange={this.handleBackendChange} defaultValue={this.state.backend} required>
+                    <Form.Select aria-label="Moodle Backend Selector" onChange={this.handleBackendSelectorChange} defaultValue={this.state.backend} required>
                         <option value="https://lms.ssn.edu.in/">SSN College LMS</option>
                         <option value="https://lms-old.ssn.edu.in/">SSN College LMS-Old</option>
                         <option value="custom">Custom Backend (Experimental!)</option>
                     </Form.Select>
                 </Form.Group>
-
+                {
+                    this.state.custombackend &&
+                    <Form.Group className="m-3" controlId="moodlecustombackendform">
+                        <Form.Control type="url" placeholder="https://school.moodledemo.net/" onChange={this.handleCustomBackendInput} required={this.state.custombackend} />
+                        <Form.Control.Feedback type="invalid">
+                            Please enter a proper URL.
+                        </Form.Control.Feedback>
+                    </Form.Group>
+                }
                 <Button variant="primary" className="mb-2" type='submit'>
                     Submit
                 </Button>
