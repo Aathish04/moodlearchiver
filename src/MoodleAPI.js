@@ -47,7 +47,7 @@ export class MoodleClient {
             bodyContent.append("wstoken", this.token);
             bodyContent.append("wsfunction", "core_webservice_get_site_info");
 
-            let response = await fetch("https://lms.ssn.edu.in/webservice/rest/server.php", {
+            let response = await fetch(`${this.backend}/webservice/rest/server.php`, {
                 method: "POST",
                 body: bodyContent,
                 headers: this.headersList
@@ -73,13 +73,12 @@ export class MoodleClient {
             throw new Error("userID not receieved yet")
         }
 
-        let bodyContent = new FormData();
+        let bodyContent = new MoodleFormData();
         bodyContent.append("wstoken", this.token);
         bodyContent.append("wsfunction", "core_enrol_get_users_courses");
-        bodyContent.append("moodlewsrestformat", "json");
         bodyContent.append("userid", this.userid);
 
-        let response = await fetch("https://lms.ssn.edu.in/webservice/rest/server.php", {
+        let response = await fetch(`${this.backend}/webservice/rest/server.php`, {
             method: "POST",
             body: bodyContent,
             headers: this.headersList
@@ -103,12 +102,11 @@ export class MoodleClient {
         for (let course of courses) {
             this.files[course["shortname"]] = {};
 
-            let bodyContent = new FormData();
+            let bodyContent = new MoodleFormData();
             bodyContent.append("wstoken", this.token);
             bodyContent.append("wsfunction", "core_course_get_contents");
-            bodyContent.append("moodlewsrestformat", "json");
             bodyContent.append("courseid", course["id"]);
-            let response = await fetch("https://lms.ssn.edu.in/webservice/rest/server.php", {
+            let response = await fetch(`${this.backend}/webservice/rest/server.php`, {
                 method: "POST",
                 body: bodyContent,
                 headers: this.headersList
