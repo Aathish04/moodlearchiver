@@ -13,6 +13,11 @@
   }
 }
 
+.dropdown-menu {
+  max-height: 20vh;
+  overflow-y: scroll;
+}
+
 .App-header {
   background-color: #1b1b1b;
   height: 100vh;
@@ -20,10 +25,10 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  overflow-y:scroll;
+  overflow-y: scroll;
 }
 
-#mainHeading{
+#mainHeading {
   color: #b9b9b9;
 }
 
@@ -35,6 +40,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }

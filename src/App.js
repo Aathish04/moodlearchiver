@@ -22,7 +22,7 @@ export class App extends React.Component {
           <h1 id="mainHeading">MoodleArchiver</h1>
           <LoginCard setMoodleClient={this.setMoodleClient}></LoginCard>
           {
-            this.state.moodleclient !== null && <CourseSelectCard></CourseSelectCard>
+            this.state.moodleclient !== null && <CourseSelectCard moodleclient={this.state.moodleclient}></CourseSelectCard>
           }
         </header>
       </div>

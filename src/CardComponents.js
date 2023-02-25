@@ -135,18 +135,39 @@ export class CourseSelectCard extends React.Component {
         this.state = {
             borderstyle: "light",
             wentthruvalidationbefore: false,
+            courses: [],
+            selectedcoursesids: [],
         }
+
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleDropDownChange = this.handleDropDownChange.bind(this);
     }
 
-    handleSubmit() {
+    async componentDidMount() {
+        await this.props.moodleclient.getUserID();
+        this.setState({ courses: await this.props.moodleclient.getUserCourses() })
+    }
 
+    async handleSubmit(event) {
+        event.preventDefault();
+        console.log(this.state.selectedcoursesids)
+        // TODO: Actually start downloading files and stuff.
+    }
+
+    handleDropDownChange(selected) {
+        this.setState({ selectedcoursesids: selected })
     }
     render() {
         return <Card className='m-2 border-3' border={this.state.borderstyle} style={{ width: '20rem' }}>
             <Card.Header>Select Courses</Card.Header>
             <Form onSubmit={this.handleSubmit} noValidate validated={this.state.wentthruvalidationbefore}>
-
-                <DropdownMultiselect options={["Australia", "Canada", "USA", "Poland", "Spain", "France"]} name="courses" />
+                {this.state.courses.length > 0 &&
+                    <DropdownMultiselect
+                        options={this.state.courses}
+                        optionKey="id"
+                        optionLabel="shortname"
+                        name="courses"
+                        handleOnChange={this.handleDropDownChange} />}
                 <Button variant="primary" className="mb-2" type='submit'>
                     Submit
                 </Button>

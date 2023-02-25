@@ -55,6 +55,37 @@ export class MoodleClient {
             return this.userid
         }
     }
+
+    async getUserCourses() {
+        if (this.token === null) {
+            throw new Error("token not recieved yet");
+        }
+        if (this.userid === null) {
+            throw new Error("userID not receieved yet")
+        }
+
+        let bodyContent = new FormData();
+        bodyContent.append("wstoken", this.token);
+        bodyContent.append("wsfunction", "core_enrol_get_users_courses");
+        bodyContent.append("moodlewsrestformat", "json");
+        bodyContent.append("userid", this.userid);
+
+        let response = await fetch("https://lms.ssn.edu.in/webservice/rest/server.php", {
+            method: "POST",
+            body: bodyContent,
+            headers: this.headersList
+        });
+
+        let data = await response.json();
+        if ("errorcode" in data) {
+            throw new Error(data["errorcode"])
+        }
+        var courses = []
+        for (let courseinfo of data) {
+            courses.push({ "id": courseinfo["id"], "shortname": courseinfo["shortname"] })
+        }
+        return courses;
+    }
 }
 
 class MoodleFormData extends FormData {
