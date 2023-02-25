@@ -150,8 +150,9 @@ export class CourseSelectCard extends React.Component {
 
     async handleSubmit(event) {
         event.preventDefault();
-        console.log(this.state.selectedcoursesids)
-        // TODO: Actually start downloading files and stuff.
+        await this.props.moodleclient.getFilesForDownload(
+            this.state.courses.filter(course => this.state.selectedcoursesids.includes(course["id"].toString()))
+        );
     }
 
     handleDropDownChange(selected) {
