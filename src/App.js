@@ -5,6 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { LoginCard, CourseSelectCard } from './CardComponents';
 import { LoadingModal } from "./Modals";
+import TitleSVG from "./assets/title.svg";
 
 export class App extends React.Component {
   constructor(props) {
@@ -24,7 +25,7 @@ export class App extends React.Component {
     return (
       <div className="App">
         <header className="App-header">
-          <h1 id="mainHeading">MoodleArchiver</h1>
+          <img id="title" src={TitleSVG} alt="MoodleArchiver" className="m-3"/>
           <LoginCard setMoodleClient={this.setMoodleClient} setLoading={this.setLoading}></LoginCard>
           {
             this.state.moodleclient !== null && <CourseSelectCard moodleclient={this.state.moodleclient} setLoading={this.setLoading}></CourseSelectCard>

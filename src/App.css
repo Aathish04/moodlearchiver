@@ -28,8 +28,8 @@
   overflow-y: scroll;
 }
 
-#mainHeading {
-  color: #b9b9b9;
+#title {
+  max-width: 30%;
 }
 
 .App-link {
