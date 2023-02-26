@@ -107,7 +107,7 @@ export class LoginCard extends React.Component { // Custom Card for Login
 
                 <Form.Group className="m-3" controlId="moodleusernameform">
                     <FloatingLabel controlId="floatingUsername" label="Moodle Username">
-                        <Form.Control type="text" placeholder="Moodle Username" onChange={this.handleUsernameChange} required />
+                        <Form.Control type="text" placeholder="Moodle Username" defaultValue={this.state.username} onChange={this.handleUsernameChange} required />
                     </FloatingLabel>
                     <Form.Control.Feedback type="invalid">
                         Please choose a username.
