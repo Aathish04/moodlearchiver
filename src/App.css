@@ -2,17 +2,6 @@
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
 .dropdown-menu {
   max-height: 20vh;
   overflow-y: scroll;
@@ -28,12 +17,9 @@
   overflow-y: scroll;
 }
 
+.card,
 #title {
-  max-width: 30%;
-}
-
-.App-link {
-  color: #61dafb;
+  width: 20rem;
 }
 
 .modal-content {
@@ -41,14 +27,4 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
 }

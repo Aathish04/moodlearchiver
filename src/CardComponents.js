@@ -64,8 +64,8 @@ export class LoginCard extends React.Component { // Custom Card for Login
         else {
             var moodleclient = new MoodleClient(this.state.username, this.state.backend);
             var invalidlogin = false;
+            this.props.setLoading(true)
             try {
-                this.props.setLoading(true)
                 await moodleclient.getToken(this.state.password);
                 this.props.setLoading(false)
                 this.setState({ borderstyle: "success", invalidcreds: false });
@@ -76,14 +76,16 @@ export class LoginCard extends React.Component { // Custom Card for Login
                     invalidlogin = true;
                 }
                 this.setState({ borderstyle: "danger", invalidcreds: invalidlogin });
+                this.setMoodleClient(null);
             }
+            this.props.setLoading(false)
         }
 
         this.setState({ wentthruvalidationbefore: true })
     }
 
     render() {
-        return <Card className='m-2 border-3' border={this.state.borderstyle} style={{ width: '20rem' }}>
+        return <Card className='m-2' border={this.state.borderstyle}>
             <Card.Header>Login to Moodle</Card.Header>
             <Form onSubmit={this.handleSubmit} noValidate validated={this.state.wentthruvalidationbefore}>
 
@@ -166,7 +168,7 @@ export class CourseSelectCard extends React.Component {
         this.setState({ selectedcoursesids: selected })
     }
     render() {
-        return <Card className='m-2 border-3' border={this.state.borderstyle} style={{ width: '20rem' }}>
+        return <Card className='m-2 border-3' border={this.state.borderstyle}>
             <Card.Header>Select Courses</Card.Header>
             <Form onSubmit={this.handleSubmit}>
                 {this.state.courses.length > 0 &&
