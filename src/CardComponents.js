@@ -156,12 +156,18 @@ export class CourseSelectCard extends React.Component {
 
     async handleSubmit(event) {
         event.preventDefault();
-        this.props.setLoading(true)
-        await this.props.moodleclient.getFilesForDownload(
-            this.state.courses.filter(course => this.state.selectedcoursesids.includes(course["id"].toString()))
-        );
-        await this.props.moodleclient.downloadFilesIntoZIP();
-        this.props.setLoading(false)
+        // TODO: for some reason clicking the select/deselect all button
+        // triggers this submission. Figure out why.
+        // the current workaround is to only do what this function needs
+        // to do when the submitter has type "submit"
+        if (event.nativeEvent.submitter.getAttribute("type") === "submit") {
+            this.props.setLoading(true)
+            await this.props.moodleclient.getFilesForDownload(
+                this.state.courses.filter(course => this.state.selectedcoursesids.includes(course["id"].toString()))
+            );
+            await this.props.moodleclient.downloadFilesIntoZIP();
+            this.props.setLoading(false)
+        }
     }
 
     handleDropDownChange(selected) {

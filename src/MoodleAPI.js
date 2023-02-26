@@ -147,7 +147,6 @@ export class MoodleClient {
         }
 
         // Now, we have all the files!
-        // console.log(this.files)
         return this.files;
     }
 
@@ -168,7 +167,6 @@ export class MoodleClient {
                         headers: this.headersList
                     });
                     let data = await response.blob();
-                    console.log(module["filepath"]);
                     sectionfolder.file(module["filepath"] + module["filename"], data)
                 }
             }
