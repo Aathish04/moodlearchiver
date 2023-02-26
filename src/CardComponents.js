@@ -1,6 +1,7 @@
 import React from 'react';
 import { instanceOf } from 'prop-types';
 import { Cookies } from 'react-cookie';
+import { Buffer } from 'buffer';
 
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
@@ -158,13 +159,17 @@ export class LoginCard extends React.Component { // Custom Card for Login
 }
 
 export class CourseSelectCard extends React.Component {
+    static propTypes = {
+        cookies: instanceOf(Cookies).isRequired
+    };
     constructor(props) { // Props are inherited properties one could pass.
         super(props);
+        const { cookies } = props;
         this.state = {
             borderstyle: "light",
             wentthruvalidationbefore: false,
             courses: [],
-            selectedcoursesids: [],
+            selectedcoursesids: cookies.get("selectedcoursesids") ? JSON.parse(Buffer.from(cookies.get("selectedcoursesids"), "base64").toString('utf-8')) : [],
         }
 
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -180,6 +185,7 @@ export class CourseSelectCard extends React.Component {
 
     async handleSubmit(event) {
         event.preventDefault();
+        const { cookies } = this.props;
         // TODO: for some reason clicking the select/deselect all button
         // triggers this submission. Figure out why.
         // the current workaround is to only do what this function needs
@@ -189,6 +195,9 @@ export class CourseSelectCard extends React.Component {
             await this.props.moodleclient.getFilesForDownload(
                 this.state.courses.filter(course => this.state.selectedcoursesids.includes(course["id"].toString()))
             );
+            let oneyearlater = new Date(new Date().setFullYear(new Date().getFullYear() + 1));
+            let encodedString = Buffer.from(JSON.stringify(this.state.selectedcoursesids)).toString('base64');
+            cookies.set('selectedcoursesids', encodedString, { expires: oneyearlater });
             await this.props.moodleclient.downloadFilesIntoZIP();
             this.props.setLoading(false)
         }
@@ -207,6 +216,13 @@ export class CourseSelectCard extends React.Component {
                         optionKey="id"
                         optionLabel="shortname"
                         name="courses"
+                        selected={
+                            this.state.selectedcoursesids.filter(
+                                courseid => this.state.courses.map(
+                                    course => course["id"].toString()
+                                ).includes(courseid)
+                            )
+                        }
                         handleOnChange={this.handleDropDownChange} />}
                 <Button variant="success" className="mb-2" type='submit' disabled={this.state.selectedcoursesids.length <= 0}>
                     Download
