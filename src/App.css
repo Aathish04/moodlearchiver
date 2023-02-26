@@ -28,3 +28,33 @@
   align-items: center;
   justify-content: center;
 }
+
+.link-onhover-color-change {
+  color: #00C099
+}
+
+.link-onhover-color-change:hover {
+  color: rgb(249, 128, 18)
+    /* This is the same as moodle's logo orange.
+  Just to maintain the colour scheme :) */
+}
+
+.footer {
+  position: absolute;
+  width: 100vw;
+  bottom: 0px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  overflow-wrap: break-word;
+  gap: 10px;
+}
+
+#self-credit-msg {
+  margin-left: 20px;
+}
+
+#contribute-msg {
+  margin-right: 20px;
+}
