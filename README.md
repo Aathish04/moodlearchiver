@@ -6,7 +6,7 @@ Moodle Archiver is a front-end web tool designed with React and Bootstrap that a
 
 With the website running, follow the steps below:
 
-1. Visit the website and enter your credentials using the form provided.
+1. Visit [the website](https://aathish04.github.io/moodlearchiver) and enter your credentials using the form provided.
 
     This website was only tested with the LMS of SSN College of Engineering, but you can enter your own institution's Moodle Backend, and it should still work.
 
