@@ -1,4 +1,6 @@
 import React from 'react';
+import { withCookies } from 'react-cookie';
+
 import './App.css';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -26,9 +28,9 @@ export class App extends React.Component {
       <div className="App">
         <header className="App-header">
           <img id="title" src={TitleSVG} alt="MoodleArchiver" className="m-3" />
-          <LoginCard setMoodleClient={this.setMoodleClient} setLoading={this.setLoading}></LoginCard>
+          <LoginCard cookies={this.props.cookies} setMoodleClient={this.setMoodleClient} setLoading={this.setLoading}></LoginCard>
           {
-            this.state.moodleclient !== null && <CourseSelectCard moodleclient={this.state.moodleclient} setLoading={this.setLoading}></CourseSelectCard>
+            this.state.moodleclient !== null && <CourseSelectCard cookies={this.props.cookies} moodleclient={this.state.moodleclient} setLoading={this.setLoading}></CourseSelectCard>
           }
         </header>
         <div className='footer'>
@@ -41,4 +43,4 @@ export class App extends React.Component {
   }
 }
 
-export default App;
+export default withCookies(App);
