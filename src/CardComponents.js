@@ -8,7 +8,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import DropdownMultiselect from "react-multiselect-dropdown-bootstrap";
-import { LoginFailedToast } from "./Toasts";
+import { LoginFailedToast, DownloadFailedToast } from "./Toasts";
 
 import { MoodleClient } from './MoodleAPI';
 
@@ -167,6 +167,8 @@ export class CourseSelectCard extends React.Component {
             wentthruvalidationbefore: false,
             courses: [],
             selectedcoursesids: cookies.get("selectedcoursesids") ? JSON.parse(Buffer.from(cookies.get("selectedcoursesids"), "base64").toString('utf-8')) : [],
+            downloadfailed: false,
+            downloadfailurereason: null,
         }
 
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -188,14 +190,20 @@ export class CourseSelectCard extends React.Component {
         // the current workaround is to only do what this function needs
         // to do when the submitter has type "submit"
         if (event.nativeEvent.submitter.getAttribute("type") === "submit") {
+            this.setState({ downloadfailed: false, downloadfailurereason: null, borderstyle: "light" })
             this.props.setLoading(true)
-            await this.props.moodleclient.getFilesForDownload(
-                this.state.courses.filter(course => this.state.selectedcoursesids.includes(course["id"].toString()))
-            );
-            let oneyearlater = new Date(new Date().setFullYear(new Date().getFullYear() + 1));
-            let encodedString = Buffer.from(JSON.stringify(this.state.selectedcoursesids)).toString('base64');
-            cookies.set('selectedcoursesids', encodedString, { expires: oneyearlater });
-            await this.props.moodleclient.downloadFilesIntoZIP();
+            try {
+                await this.props.moodleclient.getFilesForDownload(
+                    this.state.courses.filter(course => this.state.selectedcoursesids.includes(course["id"].toString()))
+                );
+                let oneyearlater = new Date(new Date().setFullYear(new Date().getFullYear() + 1));
+                let encodedString = Buffer.from(JSON.stringify(this.state.selectedcoursesids)).toString('base64');
+                cookies.set('selectedcoursesids', encodedString, { expires: oneyearlater });
+                await this.props.moodleclient.downloadFilesIntoZIP();
+            }
+            catch (e) {
+                this.setState({ borderstyle: "danger", downloadfailurereason: e.message, downloadfailed: true });
+            }
             this.props.setLoading(false)
         }
     }
@@ -225,6 +233,7 @@ export class CourseSelectCard extends React.Component {
                     Download
                 </Button>
             </Form>
+            <DownloadFailedToast showToast={this.state.downloadfailed} failureReason={this.state.downloadfailurereason}></DownloadFailedToast>
         </Card>
     }
 }

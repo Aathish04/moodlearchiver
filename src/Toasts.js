@@ -44,3 +44,12 @@ export class LoginFailedToast extends React.Component {
     </Toast>
   }
 }
+
+
+export class DownloadFailedToast extends LoginFailedToast {
+  setHeadingBody() {
+    this.resolvesteps = [];
+    this.headingtext = "Download Failed...";
+    this.mainreason = "Specifics for debugging: " + this.props.failureReason;
+  }
+}
