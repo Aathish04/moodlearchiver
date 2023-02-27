@@ -22,8 +22,8 @@ export class LoginFailedToast extends React.Component {
           this.headingtext = "Fetching Login Token Failed!"
           this.mainreason = "Couldn't reach the server..."
           this.resolvesteps = [
-            "If you're using a custom backend, check if you typed the name properly.",
-            "If you're sure the backend is proper, maybe it's down, or blocked?"
+            "If you're using a custom backend, check if you typed the URL properly.",
+            "If you're sure the backend URL is proper, maybe it's down, or blocked?"
           ]
           break;
         default:
