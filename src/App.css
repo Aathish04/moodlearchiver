@@ -39,6 +39,10 @@
   Just to maintain the colour scheme :) */
 }
 
+.toast-body{
+  text-align: left;
+}
+
 .footer {
   position: absolute;
   width: 100vw;

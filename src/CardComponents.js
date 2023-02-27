@@ -8,7 +8,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import DropdownMultiselect from "react-multiselect-dropdown-bootstrap";
-import { InvalidCredentialsToast } from "./Toasts"
+import { LoginFailedToast } from "./Toasts";
 
 import { MoodleClient } from './MoodleAPI';
 
@@ -22,13 +22,14 @@ export class LoginCard extends React.Component { // Custom Card for Login
         const { cookies } = props;
         // Set the default state here
         this.state = {
-            invalidcreds: false,
             wentthruvalidationbefore: false,
             username: cookies.get("username") || null,
             password: null,
             backend: cookies.get("backend") || "https://lms.ssn.edu.in/",
             custombackend: (cookies.get("custombackend") && JSON.parse(cookies.get("custombackend"))) || false,
-            borderstyle: "light"
+            borderstyle: "light",
+            loginfailed: false,
+            loginfailurereason: null,
         }
 
         this.handleUsernameChange = this.handleUsernameChange.bind(this);
@@ -73,12 +74,11 @@ export class LoginCard extends React.Component { // Custom Card for Login
         }
         else {
             var moodleclient = new MoodleClient(this.state.username, this.state.backend);
-            var invalidlogin = false;
             this.props.setLoading(true)
             try {
                 await moodleclient.getToken(this.state.password);
                 this.props.setLoading(false)
-                this.setState({ borderstyle: "success", invalidcreds: false });
+                this.setState({ borderstyle: "success", loginfailed: false, loginfailurereason: null });
                 this.setMoodleClient(moodleclient);
 
                 let oneyearlater = new Date(new Date().setFullYear(new Date().getFullYear() + 1));
@@ -87,10 +87,7 @@ export class LoginCard extends React.Component { // Custom Card for Login
                 cookies.set('backend', this.state.backend, { expires: oneyearlater });
             }
             catch (e) {
-                if (e.message === "invalidlogin") {
-                    invalidlogin = true;
-                }
-                this.setState({ borderstyle: "danger", invalidcreds: invalidlogin });
+                this.setState({ borderstyle: "danger", loginfailurereason: e.message, loginfailed: true });
                 this.setMoodleClient(null);
             }
             this.props.setLoading(false)
@@ -152,7 +149,7 @@ export class LoginCard extends React.Component { // Custom Card for Login
                 <Button variant="primary" className="mb-2" type='submit'>
                     Log In
                 </Button>
-                <InvalidCredentialsToast showToast={this.state.invalidcreds}></InvalidCredentialsToast>
+                <LoginFailedToast showToast={this.state.loginfailed} failureReason={this.state.loginfailurereason}></LoginFailedToast>
             </Form>
         </Card>
     }
