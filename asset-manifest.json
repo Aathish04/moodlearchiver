@@ -1,16 +1,16 @@
 {
   "files": {
     "main.css": "/moodlearchiver/static/css/main.d5c01def.css",
-    "main.js": "/moodlearchiver/static/js/main.ee6d6e21.js",
+    "main.js": "/moodlearchiver/static/js/main.509285ef.js",
     "static/js/787.34fee07c.chunk.js": "/moodlearchiver/static/js/787.34fee07c.chunk.js",
     "static/media/title.svg": "/moodlearchiver/static/media/title.b63cbf27513f8ce638ac5a103121f119.svg",
     "index.html": "/moodlearchiver/index.html",
     "main.d5c01def.css.map": "/moodlearchiver/static/css/main.d5c01def.css.map",
-    "main.ee6d6e21.js.map": "/moodlearchiver/static/js/main.ee6d6e21.js.map",
+    "main.509285ef.js.map": "/moodlearchiver/static/js/main.509285ef.js.map",
     "787.34fee07c.chunk.js.map": "/moodlearchiver/static/js/787.34fee07c.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.d5c01def.css",
-    "static/js/main.ee6d6e21.js"
+    "static/js/main.509285ef.js"
   ]
 }
