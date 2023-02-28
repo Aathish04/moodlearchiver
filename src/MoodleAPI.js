@@ -95,10 +95,49 @@ export class MoodleClient {
         return courses;
     }
 
+    async getAssignmentDetailsAndSubmissionFiles(instanceid) {
+        if (this.token === null) {
+            throw new Error("token not recieved yet");
+        }
+        let bodyContent = new MoodleFormData();
+        let details = [];
+        bodyContent.append("wstoken", this.token);
+        bodyContent.append("wsfunction", "mod_assign_get_submission_status");
+        bodyContent.append("assignid", instanceid);
+        let response = await fetch(`${this.backend}/webservice/rest/server.php`, {
+            method: "POST",
+            body: bodyContent,
+            headers: this.headersList
+        });
+        let data = await response.json();
+        if ("errorcode" in data) {
+            throw new Error(data["errorcode"])
+        }
+
+        let submission = data["lastattempt"]["submission"];
+        for (let plugin of submission["plugins"]) {
+            if (plugin["type"] === "file") {
+                for (let filearea of plugin["fileareas"]) {
+                    if (filearea["area"] === "submission_files") {
+                        details.push(...filearea["files"])
+                    }
+                }
+            }
+        }
+
+        let assignmentdata = data["assignmentdata"];
+        if ("attachments" in assignmentdata) {
+            if ("intro" in assignmentdata["attachments"]) {
+                details.push(...assignmentdata["attachments"]["intro"]);
+            }
+        }
+        return details;
+    }
     async getFilesForDownload(courses) {
         if (this.token === null) {
             throw new Error("token not recieved yet");
         }
+        this.files = {};
         for (let course of courses) {
             this.files[course["shortname"]] = {};
 
@@ -121,7 +160,6 @@ export class MoodleClient {
                 this.files[course["shortname"]][sectionname] = []
                 for (let module of section["modules"]) {
                     if ("modplural" in module) {
-                        // TODO: Add support for downloading assignments too.
                         if (["Files", "Folders"].includes(module["modplural"])) {
                             for (let content of module["contents"]) {
                                 if (content["type"] === "file") {
@@ -135,11 +173,22 @@ export class MoodleClient {
                                             // of the folder. By default the filepath is '/', so when we prepend,
                                             // the path becomes 'foldername/' and the file is saved at
                                             // "foldername/filename.filextension" instead of at "/filename.filextension"
-                                            "filepath": module["modplural"] === "Folders" ? module["name"] + content["filepath"] : content["filepath"],
+                                            "filepath": module["modplural"] === "Folders" ? this.makeStringPathSafe(module["name"]) + content["filepath"] : content["filepath"],
                                         }
                                     )
                                 }
                             }
+                        }
+                        else if (module["modplural"] === "Assignments") {
+                            let detailsandubmissionfiles = await this.getAssignmentDetailsAndSubmissionFiles(module["instance"])
+                            for (let dOrSubfile of detailsandubmissionfiles) {
+                                this.files[course["shortname"]][sectionname].push({
+                                    "fileurl": dOrSubfile["fileurl"],
+                                    "filename": dOrSubfile["filename"],
+                                    "filepath": this.makeStringPathSafe(module["name"]) + dOrSubfile["filepath"]
+                                })
+                            }
+
                         }
                     }
                 }
@@ -158,7 +207,11 @@ export class MoodleClient {
             for (let section in sections) {
                 var sectionfolder = coursefolder.folder(section);
                 for (let module of sections[section]) {
-                    // a module is either a file or folder. see TODO in func above.
+                    // This module (in this scope alone) is slightly different
+                    // from a moodle module which is either a file or folder
+                    // here, it is a file, or folder that has been uploaded
+                    // as a module itself, or it might also be attachments to
+                    // a particular assignment.
                     let bodyContent = new MoodleFormData();
                     bodyContent.append("token", this.token);
                     let response = await fetch(module["fileurl"], {
