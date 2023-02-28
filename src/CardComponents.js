@@ -217,7 +217,20 @@ export class CourseSelectCard extends React.Component {
             <Form onSubmit={this.handleSubmit}>
                 {this.state.courses.length > 0 &&
                     <DropdownMultiselect
-                        options={this.state.courses}
+                        options={
+                            this.state.courses.sort(
+                                function (course1, course2) {
+                                    if (course1["shortname"] < course2["shortname"]) {
+                                        return 1;
+                                    }
+                                    else if (course1["shortname"] > course2["shortname"]) {
+                                        return -1;
+                                    } else {
+                                        return 0;
+                                    }
+                                }
+                            )
+                        }
                         optionKey="id"
                         optionLabel="shortname"
                         name="courses"
