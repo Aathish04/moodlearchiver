@@ -202,6 +202,7 @@ export class CourseSelectCard extends React.Component {
                 await this.props.moodleclient.downloadFilesIntoZIP();
             }
             catch (e) {
+                console.log(e);
                 this.setState({ borderstyle: "danger", downloadfailurereason: e.message, downloadfailed: true });
             }
             this.props.setLoading(false)
