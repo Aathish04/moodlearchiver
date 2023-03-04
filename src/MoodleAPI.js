@@ -55,7 +55,7 @@ export class MoodleClient {
 
             let data = await response.json();
             if ("errorcode" in data) {
-                throw new Error(data["errorcode"])
+                throw new MoodleError(data)
             }
             this.userid = data["userid"]
             return this.userid;
@@ -86,13 +86,38 @@ export class MoodleClient {
 
         let data = await response.json();
         if ("errorcode" in data) {
-            throw new Error(data["errorcode"])
+            throw new MoodleError(data)
         }
         var courses = []
         for (let courseinfo of data) {
             courses.push({ "id": courseinfo["id"], "shortname": courseinfo["shortname"] })
         }
         return courses;
+    }
+
+    async getUserAssignments(courses) {
+        if (this.token === null) {
+            throw new Error("token not recieved yet");
+        }
+        let bodyContent = new MoodleFormData();
+        bodyContent.append("wstoken", this.token);
+        bodyContent.append("wsfunction", "mod_assign_get_assignments");
+        for (let [index, course] of courses.entries()) {
+            bodyContent.append(`courseids[${index}]`, course["id"]);
+        }
+        let response = await fetch(`${this.backend}/webservice/rest/server.php`, {
+            method: "POST",
+            body: bodyContent,
+            headers: this.headersList
+        });
+        let data = await response.json();
+        if ("errorcode" in data) {
+            throw new MoodleError(data)
+        }
+        let assignments = [];
+        assignments = data["courses"].map(course => course["assignments"]);
+        assignments = assignments.flat();
+        return assignments;
     }
 
     async getAssignmentDetailsAndSubmissionFiles(instanceid) {
@@ -111,24 +136,29 @@ export class MoodleClient {
         });
         let data = await response.json();
         if ("errorcode" in data) {
-            throw new Error(data["errorcode"])
+            throw new MoodleError(data)
         }
 
-        let submission = data["lastattempt"]["submission"];
-        for (let plugin of submission["plugins"]) {
-            if (plugin["type"] === "file") {
-                for (let filearea of plugin["fileareas"]) {
-                    if (filearea["area"] === "submission_files") {
-                        details.push(...filearea["files"])
+        if ("lastattempt" in data) {
+            if ("submission" in data["lastattempt"]) {
+                let submission = data["lastattempt"]["submission"];
+                for (let plugin of submission["plugins"]) {
+                    if (plugin["type"] === "file") {
+                        for (let filearea of plugin["fileareas"]) {
+                            if (filearea["area"] === "submission_files") {
+                                details.push(...filearea["files"])
+                            }
+                        }
                     }
                 }
             }
         }
-
-        let assignmentdata = data["assignmentdata"];
-        if ("attachments" in assignmentdata) {
-            if ("intro" in assignmentdata["attachments"]) {
-                details.push(...assignmentdata["attachments"]["intro"]);
+        if ("assignmentdata" in data) {
+            let assignmentdata = data["assignmentdata"];
+            if ("attachments" in assignmentdata) {
+                if ("intro" in assignmentdata["attachments"]) {
+                    details.push(...assignmentdata["attachments"]["intro"]);
+                }
             }
         }
         return details;
@@ -137,6 +167,7 @@ export class MoodleClient {
         if (this.token === null) {
             throw new Error("token not recieved yet");
         }
+        let cur_user_assignments = await this.getUserAssignments(courses);
         this.files = {};
         for (let course of courses) {
             this.files[course["shortname"]] = {};
@@ -152,7 +183,7 @@ export class MoodleClient {
             });
             let data = await response.json();
             if ("errorcode" in data) {
-                throw new Error(data["errorcode"])
+                throw new MoodleError(data)
             }
 
             for (let section of data) {
@@ -180,13 +211,39 @@ export class MoodleClient {
                             }
                         }
                         else if (module["modplural"] === "Assignments") {
-                            let detailsandubmissionfiles = await this.getAssignmentDetailsAndSubmissionFiles(module["instance"])
-                            for (let dOrSubfile of detailsandubmissionfiles) {
-                                this.files[course["shortname"]][sectionname].push({
-                                    "fileurl": dOrSubfile["fileurl"],
-                                    "filename": dOrSubfile["filename"],
-                                    "filepath": this.makeStringPathSafe(module["name"]) + dOrSubfile["filepath"]
-                                })
+                            try {
+                                let detailsandubmissionfiles = await this.getAssignmentDetailsAndSubmissionFiles(module["instance"])
+                                for (let dOrSubfile of detailsandubmissionfiles) {
+                                    this.files[course["shortname"]][sectionname].push({
+                                        "fileurl": dOrSubfile["fileurl"],
+                                        "filename": dOrSubfile["filename"],
+                                        "filepath": this.makeStringPathSafe(module["name"]) + dOrSubfile["filepath"]
+                                    })
+                                }
+                                // In case their version of moodle doesn't return assignment intro information along with submission info:
+                                let cur_assignment = cur_user_assignments.find(assignment => assignment["id"] === module["instance"])
+                                if ("introattachments" in cur_assignment) {
+                                    for (let attachment of cur_assignment["introattachments"]) {
+                                        if (this.files[course["shortname"]][sectionname].find(filedata => filedata["fileurl"] === attachment["fileurl"]) === undefined) {
+                                            this.files[course["shortname"]][sectionname].push({
+                                                "fileurl": attachment["fileurl"],
+                                                "filename": attachment["filename"],
+                                                "filepath": this.makeStringPathSafe(module["name"]) + cur_assignment["filepath"]
+                                            })
+                                        }
+                                    }
+                                }
+
+                            }
+                            catch (e) {
+                                if (e instanceof MoodleError) {
+                                    if (e.moodleerrorcode === "requireloginerror") {
+                                        console.log(`Could not access assignment ${module["name"]}. Skipping.`);
+                                    } // that assignment is no longer accessible.
+                                }
+                                else {
+                                    throw e;
+                                }
                             }
 
                         }
@@ -232,5 +289,14 @@ class MoodleFormData extends FormData {
     constructor(args) {
         super(args);
         this.append("moodlewsrestformat", "json")
+    }
+}
+
+class MoodleError extends Error {
+    constructor(errorobj) {
+        super(errorobj["message"]);
+        this.moodleexception = errorobj["exception"];
+        this.moodleerrorcode = errorobj["errorcode"];
+        this.message = errorobj["message"];
     }
 }
