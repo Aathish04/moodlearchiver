@@ -197,7 +197,7 @@ export class MoodleClient {
                                     this.files[course["shortname"]][sectionname].push(
                                         {
                                             "fileurl": content["fileurl"],
-                                            "filename": content["filename"],
+                                            "filename": content["filename"].substr(0, content["filename"].lastIndexOf(".")) + "_" + content["timemodified"] + "." + content["filename"].split('.').pop(),
                                             // We do the following so that in the event that the faculty uploaded a folder as the module,
                                             // all the files inside the folder are properly wrapped up in said folder
                                             // We accomplish this by prepending the filepath of the file with the name
@@ -216,7 +216,7 @@ export class MoodleClient {
                                 for (let dOrSubfile of detailsandubmissionfiles) {
                                     this.files[course["shortname"]][sectionname].push({
                                         "fileurl": dOrSubfile["fileurl"],
-                                        "filename": dOrSubfile["filename"],
+                                        "filename": dOrSubfile["filename"].substr(0, dOrSubfile["filename"].lastIndexOf(".")) + "_" + dOrSubfile["timemodified"] + "." + dOrSubfile["filename"].split('.').pop(),
                                         "filepath": this.makeStringPathSafe(module["name"]) + dOrSubfile["filepath"]
                                     })
                                 }
@@ -227,7 +227,7 @@ export class MoodleClient {
                                         if (this.files[course["shortname"]][sectionname].find(filedata => filedata["fileurl"] === attachment["fileurl"]) === undefined) {
                                             this.files[course["shortname"]][sectionname].push({
                                                 "fileurl": attachment["fileurl"],
-                                                "filename": attachment["filename"],
+                                                "filename": attachment["filename"].substr(0, attachment["filename"].lastIndexOf(".")) + "_" + attachment["timemodified"] + "." + attachment["filename"].split('.').pop(),
                                                 "filepath": this.makeStringPathSafe(module["name"]) + cur_assignment["filepath"]
                                             })
                                         }
