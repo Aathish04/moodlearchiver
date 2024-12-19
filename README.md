@@ -8,7 +8,7 @@ With the website running, follow the steps below:
 
 1. Visit [the website](https://aathish04.github.io/moodlearchiver) and enter your credentials using the form provided.
 
-    This website was only tested with the LMS of SSN College of Engineering, but you can enter your own institution's Moodle Backend, and it should still work.
+    This website was only tested with the LMS of SSN College of Engineering/SNU Chennai, but you can enter your own institution's Moodle Backend, and it should still work.
 
 2. Select the courses whose material you want to download.
 
