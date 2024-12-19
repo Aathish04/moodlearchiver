@@ -191,6 +191,12 @@ export class MoodleClient {
         for (let module of section["modules"]) {
           if ("modplural" in module) {
             if (["Files", "Folders"].includes(module["modplural"])) {
+
+              if (module["contents"] === undefined) {
+                console.log(`No contents available for ${module["name"]} under ${course["shortname"]} - ${sectionname}. Skipping.`);
+                continue
+              }
+
               for (let content of module["contents"]) {
                 if (content["type"] === "file") {
                   this.files[course["shortname"]][sectionname].push(
