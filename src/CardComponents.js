@@ -128,6 +128,7 @@ export class LoginCard extends React.Component { // Custom Card for Login
                         defaultValue={this.state.custombackend ? "custom" : this.state.backend}
                         required>
                         <option value="https://lms.ssn.edu.in/">SSN College LMS</option>
+                        <option value="https://lms-old.snn.edu.in">SSN College LMS (old)</option>
                         <option value="https://lms.snuchennai.edu.in/">SNU Chennai LMS</option>
                         <option value="https://lms-old.snuchennai.edu.in">SNU Chennai LMS (old)</option>
                         <option value="custom">Custom Backend (Experimental!)</option>
