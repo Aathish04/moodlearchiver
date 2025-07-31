@@ -22,3 +22,13 @@ export function LoadingModal({ downloadProgress }) {
         </Modal>
     );
 }
+
+export function LoginModal() {
+  return (
+    <Modal centered show={true} backdrop="static" keyboard={false}>
+      <Modal.Header>
+        <Modal.Title>Logging in.... <Spinner animation="border"/></Modal.Title>
+      </Modal.Header>
+    </Modal>
+  )
+}
