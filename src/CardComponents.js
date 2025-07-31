@@ -211,6 +211,9 @@ export class CourseSelectCard extends React.Component {
                 console.log(e);
                 this.setState({ borderstyle: "danger", downloadfailurereason: e.message, downloadfailed: true });
             }
+            finally {
+                this.props.setLoading(false);
+            }
         }
     }
 
