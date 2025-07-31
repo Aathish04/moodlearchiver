@@ -75,10 +75,10 @@ export class LoginCard extends React.Component { // Custom Card for Login
         }
         else {
             var moodleclient = new MoodleClient(this.state.username, this.state.backend);
-            this.props.setLoading(true)
+            this.props.setAwaitLogin(true);
             try {
                 await moodleclient.getToken(this.state.password);
-                this.props.setLoading(false)
+                this.props.setAwaitLogin(false)
                 this.setState({ borderstyle: "success", loginfailed: false, loginfailurereason: null });
                 this.setMoodleClient(moodleclient);
 
@@ -91,7 +91,7 @@ export class LoginCard extends React.Component { // Custom Card for Login
                 this.setState({ borderstyle: "danger", loginfailurereason: e.message, loginfailed: true });
                 this.setMoodleClient(null);
             }
-            this.props.setLoading(false)
+            this.props.setAwaitLogin(false)
         }
 
         this.setState({ wentthruvalidationbefore: true })
@@ -211,7 +211,6 @@ export class CourseSelectCard extends React.Component {
                 console.log(e);
                 this.setState({ borderstyle: "danger", downloadfailurereason: e.message, downloadfailed: true });
             }
-            this.props.setLoading(false)
         }
     }
 
