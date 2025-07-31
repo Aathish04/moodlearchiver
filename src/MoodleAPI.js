@@ -211,6 +211,7 @@ export class MoodleClient {
                       // the path becomes 'foldername/' and the file is saved at
                       // "foldername/filename.filextension" instead of at "/filename.filextension"
                       "filepath": module["modplural"] === "Folders" ? this.makeStringPathSafe(module["name"]) + content["filepath"] : content["filepath"],
+                      "timestamp": content["timemodified"]
                     }
                   )
                 }
@@ -223,7 +224,8 @@ export class MoodleClient {
                   this.files[course["shortname"]][sectionname].push({
                     "fileurl": dOrSubfile["fileurl"],
                     "filename": dOrSubfile["filename"].substr(0, dOrSubfile["filename"].lastIndexOf(".")) + "_" + dOrSubfile["timemodified"] + "." + dOrSubfile["filename"].split('.').pop(),
-                    "filepath": this.makeStringPathSafe(module["name"]) + dOrSubfile["filepath"]
+                    "filepath": this.makeStringPathSafe(module["name"]) + dOrSubfile["filepath"],
+                    "timestamp": dOrSubfile["timemodified"]
                   })
                 }
                 // In case their version of moodle doesn't return assignment intro information along with submission info:
@@ -234,7 +236,8 @@ export class MoodleClient {
                       this.files[course["shortname"]][sectionname].push({
                         "fileurl": attachment["fileurl"],
                         "filename": attachment["filename"].substr(0, attachment["filename"].lastIndexOf(".")) + "_" + attachment["timemodified"] + "." + attachment["filename"].split('.').pop(),
-                        "filepath": this.makeStringPathSafe(module["name"]) + cur_assignment["filepath"]
+                        "filepath": this.makeStringPathSafe(module["name"]) + cur_assignment["filepath"],
+                        "timestamp": attachment["timemodified"]
                       })
                     }
                   }
