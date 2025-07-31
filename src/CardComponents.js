@@ -9,6 +9,7 @@ import Form from 'react-bootstrap/Form';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import DropdownMultiselect from "react-multiselect-dropdown-bootstrap";
 import { LoginFailedToast, DownloadFailedToast } from "./Toasts";
+import ProgressBar from 'react-bootstrap/ProgressBar';
 
 import { MoodleClient } from './MoodleAPI';
 
@@ -201,7 +202,10 @@ export class CourseSelectCard extends React.Component {
                 let oneyearlater = new Date(new Date().setFullYear(new Date().getFullYear() + 1));
                 let encodedString = Buffer.from(JSON.stringify(this.state.selectedcoursesids)).toString('base64');
                 cookies.set('selectedcoursesids', encodedString, { expires: oneyearlater });
-                await this.props.moodleclient.downloadFilesIntoZIP();
+                await this.props.moodleclient.downloadFilesIntoZIP((progress) => {
+                    this.props.moodleclient.downloadProgress = progress;
+                    this.forceUpdate();
+                });
             }
             catch (e) {
                 console.log(e);
@@ -249,6 +253,7 @@ export class CourseSelectCard extends React.Component {
                     Download
                 </Button>
             </Form>
+            <ProgressBar now={this.props.moodleclient.downloadProgress} label={`${Math.round(this.props.moodleclient.downloadProgress)}%`} />
             <DownloadFailedToast showToast={this.state.downloadfailed} failureReason={this.state.downloadfailurereason}></DownloadFailedToast>
         </Card>
     }

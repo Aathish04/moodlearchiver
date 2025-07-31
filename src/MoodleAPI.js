@@ -10,6 +10,7 @@ export class MoodleClient {
     this.token = null;
     this.backend = backend.replace("/+$/g", '');
     this.files = {};
+    this.downloadProgress = 0;
   }
 
   makeStringPathSafe(string) {
@@ -264,15 +265,24 @@ export class MoodleClient {
     return this.files;
   }
 
-  async downloadFilesIntoZIP() {
+  async downloadFilesIntoZIP(onProgress) {
     let jszip = new JSZip();
+    let totalFiles = 0;
+    let downloadedFiles = 0;
+
+    // Count total files
+    for (let course in this.files) {
+      for (let section in this.files[course]) {
+        totalFiles += this.files[course][section].length;
+      }
+    }
+
     for (let course in this.files) {
       var coursefolder = jszip.folder(this.makeStringPathSafe(course));
       let sections = this.files[course];
       for (let section in sections) {
         var sectionfolder = coursefolder.folder(section);
         for (let module of sections[section]) {
-          // This module (in this scope alone) is slightly different
           // from a moodle module which is either a file or folder
           // here, it is a file, or folder that has been uploaded
           // as a module itself, or it might also be attachments to
@@ -285,9 +295,11 @@ export class MoodleClient {
             headers: this.headersList
           });
           let data = await response.blob();
-          sectionfolder.file(module["filepath"] + module["filename"], data, {
+         sectionfolder.file(module["filepath"] + module["filename"], data, {
             date: new Date(module["timestamp"] * 1000) // Convert Unix timestamp to JavaScript Date
           });
+          downloadedFiles++;
+          onProgress((downloadedFiles / totalFiles) * 100);
         }
       }
     }
