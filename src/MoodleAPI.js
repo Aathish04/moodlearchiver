@@ -288,7 +288,9 @@ export class MoodleClient {
             headers: this.headersList
           });
           let data = await response.blob();
-          sectionfolder.file(module["filepath"] + module["filename"], data);
+         sectionfolder.file(module["filepath"] + module["filename"], data, {
+            date: new Date(module["timestamp"] * 1000) // Convert Unix timestamp to JavaScript Date
+          });
           downloadedFiles++;
           onProgress((downloadedFiles / totalFiles) * 100);
         }
