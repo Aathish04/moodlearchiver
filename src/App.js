@@ -37,7 +37,7 @@ export class App extends React.Component {
           <p className="text-start text-light font-monospace" id="self-credit-msg">By: <a href="https://github.com/Aathish04" target="_blank" rel="noopener noreferrer" className="link-onhover-color-change link">Aathish04</a></p>
           <p className="text-start text-light font-monospace" id="contribute-msg">Feel free to <a href="https://github.com/Aathish04/moodlearchiver" target="_blank" rel="noopener noreferrer" className="link-onhover-color-change link">Contribute</a>!</p>
         </div>
-        {this.state.loading && <LoadingModal></LoadingModal>}
+        {this.state.loading && <LoadingModal downloadProgress={this.state.moodleclient ? this.state.moodleclient.downloadProgress : 0} />}
       </div>
     );
   }
