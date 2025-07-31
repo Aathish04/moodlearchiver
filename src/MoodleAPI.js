@@ -280,6 +280,10 @@ export class MoodleClient {
       for (let section in sections) {
         var sectionfolder = coursefolder.folder(section);
         for (let module of sections[section]) {
+          // from a moodle module which is either a file or folder
+          // here, it is a file, or folder that has been uploaded
+          // as a module itself, or it might also be attachments to
+          // a particular assignment.
           let bodyContent = new MoodleFormData();
           bodyContent.append("token", this.token);
           let response = await fetch(module["fileurl"], {
